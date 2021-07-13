@@ -1,0 +1,6 @@
+framework module Pods_codepath_week_two {
+  umbrella header "Pods-codepath.week.two-umbrella.h"
+
+  export *
+  module * { export * }
+}

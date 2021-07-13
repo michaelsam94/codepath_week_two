@@ -1,0 +1,6 @@
+${PODS_ROOT}/Target Support Files/Pods-codepath.week.two-codepath.week.twoUITests/Pods-codepath.week.two-codepath.week.twoUITests-frameworks.sh
+${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework
+${BUILT_PRODUCTS_DIR}/AlamofireNetworkActivityLogger/AlamofireNetworkActivityLogger.framework
+${BUILT_PRODUCTS_DIR}/Cosmos/Cosmos.framework
+${BUILT_PRODUCTS_DIR}/RappleProgressHUD/RappleProgressHUD.framework
+${BUILT_PRODUCTS_DIR}/Reachability/Reachability.framework
