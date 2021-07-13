@@ -8,11 +8,13 @@
 import UIKit
 import RappleProgressHUD
 
-class BusinessesViewController: UIViewController,UITableViewDelegate,UITableViewDataSource,UISearchBarDelegate {
+class BusinessesViewController: UIViewController,UITableViewDelegate,UITableViewDataSource,UISearchBarDelegate,UISearchResultsUpdating {
     
     
-    @IBOutlet weak var bussinsessSearchBar: UISearchBar!
     @IBOutlet weak var bussinsessTableView: UITableView!
+    
+    
+    var searchController: UISearchController = UISearchController()
     
     var businesss : [Business] = [] {
         didSet {
@@ -36,28 +38,28 @@ class BusinessesViewController: UIViewController,UITableViewDelegate,UITableView
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        bussinsessSearchBar.delegate = self
+        title = "Search Bussiness"
         bussinsessTableView.dataSource = self
         bussinsessTableView.delegate = self
         bussinsessTableView.isHidden = true
+        searchController.searchResultsUpdater = self
+        searchController.searchBar.delegate = self
+        navigationItem.searchController = searchController
     }
     
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        if let q = bussinsessSearchBar.text {
-            if !q.isEmpty {
-                if q != term {
-                    businesss.removeAll()
-                }
+
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        
+    }
+    
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        businesss.removeAll()
+        if let q = searchBar.text {
+            if q != term {
                 term = q
                 getBussinesses(term: term, offset: 0)
             }
-        }
-    }
-    
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        if searchBar.text == "" {
-            businesss.removeAll()
-            bussinsessTableView.reloadData()
         }
     }
     
@@ -73,7 +75,6 @@ class BusinessesViewController: UIViewController,UITableViewDelegate,UITableView
         let row = indexPath.row
         cell.businessNameLabel.text = businesss[row].name
         cell.bussinessRatingBar.rating = businesss[row].rating ?? 0.0
-        print("rating\(businesss[row].rating)")
         cell.businessImageView.loadImage(at: businesss[row].image_url ?? "")
         cell.businessAddressLabel.text = businesss[row].location?.address1 ?? ""
         var categories = ""
@@ -95,6 +96,18 @@ class BusinessesViewController: UIViewController,UITableViewDelegate,UITableView
             getBussinesses(term: term, offset: (page * 20) + 1)
         }
         return cell
+    }
+    
+    func updateSearchResults(for searchController: UISearchController) {
+//        guard let q = searchController.searchBar.text else {
+//            return
+//        }
+//        print("query \(q)")
+//        if !q.isEmpty && q != term {
+//            businesss.removeAll()
+//            term = q
+//            getBussinesses(term: term, offset: 0)
+//        }
     }
     
     
