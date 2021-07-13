@@ -26,7 +26,8 @@ class NetworkOperations {
         let paramaters = [
             "limit": "20",
             "offset": String(offset),
-            "location": "CA"
+            "location": "CA",
+            "term": term
         ]
         let request = AF.request("\(baseUrl)businesses/search", method: .get,parameters: paramaters,headers: HTTPHeaders(headers))
 

@@ -14,7 +14,13 @@ class BusinessesViewController: UIViewController,UITableViewDelegate,UITableView
     @IBOutlet weak var bussinsessSearchBar: UISearchBar!
     @IBOutlet weak var bussinsessTableView: UITableView!
     
-    var businesss : [Business] = []
+    var businesss : [Business] = [] {
+        didSet {
+            if businesss.count != oldValue.count {
+                bussinsessTableView.isHidden = businesss.count == 0
+            }
+        }
+    }
     var term: String = ""
     var total: Int = 0
     var isLoading = false {
@@ -33,6 +39,7 @@ class BusinessesViewController: UIViewController,UITableViewDelegate,UITableView
         bussinsessSearchBar.delegate = self
         bussinsessTableView.dataSource = self
         bussinsessTableView.delegate = self
+        bussinsessTableView.isHidden = true
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
@@ -45,8 +52,15 @@ class BusinessesViewController: UIViewController,UITableViewDelegate,UITableView
                 getBussinesses(term: term, offset: 0)
             }
         }
-        
     }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchBar.text == "" {
+            businesss.removeAll()
+            bussinsessTableView.reloadData()
+        }
+    }
+    
     
     
     
@@ -76,7 +90,7 @@ class BusinessesViewController: UIViewController,UITableViewDelegate,UITableView
         cell.businessCategoriesLabel.text = categories
         cell.businessReviewCountLabel.text = "\(businesss[row].review_count ?? 0) Reviews"
         
-        if indexPath.row == businesss.count - 1 && businesss.count < total {
+        if indexPath.row == businesss.count - 1 && businesss.count < total && !isLoading {
             let page = (businesss.count % 19) + 1
             getBussinesses(term: term, offset: (page * 20) + 1)
         }
@@ -102,8 +116,10 @@ extension BusinessesViewController {
             if let businesses = response.businesses {
                 self.isLoading = false
                 self.total = response.total ?? 0
-                self.businesss.append(contentsOf: businesses)
-                self.bussinsessTableView.reloadData()
+                if !businesses.isEmpty {
+                    self.businesss.append(contentsOf: businesses)
+                    self.bussinsessTableView.reloadData()
+                }
             }
             
         })
