@@ -13,8 +13,11 @@ class BusinessesViewController: UIViewController,UITableViewDelegate,UITableView
     
     @IBOutlet weak var bussinsessTableView: UITableView!
     
+    var openNow: Bool = false
+    var sortBy: String = ""
     
     var searchController: UISearchController = UISearchController()
+    var filterButton: UIBarButtonItem!
     
     var businesss : [Business] = [] {
         didSet {
@@ -45,9 +48,18 @@ class BusinessesViewController: UIViewController,UITableViewDelegate,UITableView
         searchController.searchResultsUpdater = self
         searchController.searchBar.delegate = self
         navigationItem.searchController = searchController
+        filterButton = UIBarButtonItem(image: .none, style: .plain,target: self, action: #selector(showFilterVC))
+        filterButton.title = "Filter"
+        navigationItem.leftBarButtonItem = filterButton
     }
     
-
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "showFilter" {
+            
+        }
+    }
+    
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         
@@ -86,7 +98,7 @@ class BusinessesViewController: UIViewController,UITableViewDelegate,UITableView
                     categories.append("\(name), ")
                 }
             }
-
+            
         }
         cell.businessCategoriesLabel.text = categories
         cell.businessReviewCountLabel.text = "\(businesss[row].review_count ?? 0) Reviews"
@@ -99,15 +111,28 @@ class BusinessesViewController: UIViewController,UITableViewDelegate,UITableView
     }
     
     func updateSearchResults(for searchController: UISearchController) {
-//        guard let q = searchController.searchBar.text else {
-//            return
-//        }
-//        print("query \(q)")
-//        if !q.isEmpty && q != term {
-//            businesss.removeAll()
-//            term = q
-//            getBussinesses(term: term, offset: 0)
-//        }
+        //        guard let q = searchController.searchBar.text else {
+        //            return
+        //        }
+        //        print("query \(q)")
+        //        if !q.isEmpty && q != term {
+        //            businesss.removeAll()
+        //            term = q
+        //            getBussinesses(term: term, offset: 0)
+        //        }
+    }
+    
+    @objc func showFilterVC(){
+        let filterVC: FilterViewController = storyboard?.instantiateViewController(identifier: "FilterViewController") as! FilterViewController
+        filterVC.onFilterSelected = { (isOpenNow: Bool,selectedSortBy: String) in
+            self.openNow = isOpenNow
+            self.sortBy = selectedSortBy
+            if self.openNow || self.sortBy != "" {
+                self.businesss.removeAll()
+                self.getBussinesses(term: self.term, offset: 0)
+            }
+        }
+        navigationController?.pushViewController(filterVC, animated: true)
     }
     
     
@@ -125,7 +150,7 @@ extension BusinessesViewController {
         print("offset \(offset)")
         print("total \(total)")
         
-        NetworkOperations().searchBusineses(term: term, offset: offset, completionsHandler: {(response) in
+        NetworkOperations().searchBusineses(term: term, offset: offset,sortBy: sortBy,oponNow: openNow, completionsHandler: {(response) in
             if let businesses = response.businesses {
                 self.isLoading = false
                 self.total = response.total ?? 0

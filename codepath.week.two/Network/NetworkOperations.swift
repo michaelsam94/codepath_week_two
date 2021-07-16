@@ -19,16 +19,22 @@ class NetworkOperations {
         apiKey = Utilities().getApiKey()
     }
     
-    public func searchBusineses(term: String,offset: Int,completionsHandler: @escaping (BusinessesRes) -> Void) {
+    public func searchBusineses(term: String,offset: Int,sortBy: String = "",oponNow: Bool = false,completionsHandler: @escaping (BusinessesRes) -> Void) {
         let headers = [
             "Authorization" : apiKey
         ]
-        let paramaters = [
+        var paramaters = [
             "limit": "20",
             "offset": String(offset),
             "location": "CA",
             "term": term
         ]
+        if sortBy != "" {
+            paramaters["sort_by"] = sortBy
+        }
+        if oponNow {
+            paramaters["open_now"] = "true"
+        }
         let request = AF.request("\(baseUrl)businesses/search", method: .get,parameters: paramaters,headers: HTTPHeaders(headers))
 
         request.responseDecodable(of: BusinessesRes.self,completionHandler:{ (response) in

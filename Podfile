@@ -11,6 +11,7 @@ target 'codepath.week.two' do
   pod 'RappleProgressHUD'
   pod 'Reachability'
   pod 'Cosmos', '~> 23.0'
+  pod 'DropDown'
 
   target 'codepath.week.twoTests' do
     inherit! :search_paths
